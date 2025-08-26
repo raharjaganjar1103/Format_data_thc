@@ -18,8 +18,8 @@ df_S = None
 
 # --- FUNGSI TAMBAHAN KOLUMN ---
 def tambah_kolom_estimasi(df):
-st.write("Kolom tersedia:", df.columns.tolist())
-st.write(df.head())
+    st.write("Kolom tersedia:", df.columns.tolist())
+    st.write(df.head())
     df["Estimasi Nominal Kecil Menabung"] = df["Db Total"].apply(estimasi_nominal_kecil_menabung)
     df["Estimasi Nominal Kecil Penarikan"] = df["Cr Total"].apply(estimasi_nominal_kecil_penarikan)
     df["Estimasi Uang"] = df["Db Total2"].apply(estimasi_uang)
