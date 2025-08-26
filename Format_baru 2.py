@@ -17,7 +17,7 @@ df_S = None
 
 @st.cache_data
 def load_excel(file):
-    return pd.read_excel(file, engine='openpyxl')
+    return pd.read_csv
 
 if uploaded_files:
     for file in uploaded_files:
