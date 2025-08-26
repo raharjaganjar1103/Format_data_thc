@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pyarrow as pa
+
 import io
 
 st.title('Anomali transaksi harian Format THC Gabungan')
@@ -15,44 +15,38 @@ uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, ty
 df_PDR = None
 df_S = None
 
-@st.cache_data
-def load_excel(file):
-    return pd.read_csv
+
+# --- FUNGSI TAMBAHAN KOLUMN ---
+def tambah_kolom_estimasi(df):
+    df["Estimasi Nominal Kecil Menabung"] = df["Db Total"].apply(estimasi_nominal_kecil_menabung)
+    df["Estimasi Nominal Kecil Penarikan"] = df["Cr Total"].apply(estimasi_nominal_kecil_penarikan)
+    df["Estimasi Uang"] = df["Db Total2"].apply(estimasi_uang)
+    df["Estimasi Nabung 1"] = df["Estimasi Uang"] - df["Db Total2"]
+    df["Estimasi Nabung 2"] = df["Estimasi Nabung 1"].apply(estimasi_nabung_2)
+    df["Estimasi Nabung 3"] = df["Estimasi Nabung 1"].apply(estimasi_nabung_3)
+    df["Estimasi Penarikan 1"] = df["Db Total2"].apply(estimasi_penarikan_1)
+    df["Estimasi Penarikan 2"] = df["Estimasi Penarikan 1"].apply(estimasi_penarikan_2)
+    df["T/F 1"] = df.apply(tf_1, axis=1)
+    df["T/F2"] = df.apply(tf2, axis=1)
+    df["Final Filter"] = df.apply(final_filter, axis=1)
+    return df
 
 if uploaded_files:
     for file in uploaded_files:
         if file.name.lower().endswith('.csv') and file.name == 'THC Final.csv':
-            # Asumsi delimiter ;, bisa diubah jika perlu
             try:
                 df_PDR = pd.read_csv(file, delimiter=';')
             except Exception:
-                df_PDR = pd.read_csv(file)  # fallback delimiter default koma
+                df_PDR = pd.read_csv(file)
 
     if df_PDR is None:
         st.error("File 'THC Final.csv' tidak ditemukan. Mohon upload file yang benar.")
     else:
-        # --- PROSES TAMBAHAN KOLUMN ---
-        def tambah_kolom_estimasi(df):
-            df["Estimasi Nominal Kecil Menabung"] = df["Db Total"].apply(estimasi_nominal_kecil_menabung)
-            df["Estimasi Nominal Kecil Penarikan"] = df["Cr Total"].apply(estimasi_nominal_kecil_penarikan)
-            df["Estimasi Uang"] = df["Db Total2"].apply(estimasi_uang)
-            df["Estimasi Nabung 1"] = df["Estimasi Uang"] - df["Db Total2"]
-            df["Estimasi Nabung 2"] = df["Estimasi Nabung 1"].apply(estimasi_nabung_2)
-            df["Estimasi Nabung 3"] = df["Estimasi Nabung 1"].apply(estimasi_nabung_3)
-            df["Estimasi Penarikan 1"] = df["Db Total2"].apply(estimasi_penarikan_1)
-            df["Estimasi Penarikan 2"] = df["Estimasi Penarikan 1"].apply(estimasi_penarikan_2)
-            df["T/F 1"] = df.apply(tf_1, axis=1)
-            df["T/F2"] = df.apply(tf2, axis=1)
-            df["Final Filter"] = df.apply(final_filter, axis=1)
-            return df
-            
-        # Proses data dan tampilkan hasil
         df_hasil = tambah_kolom_estimasi(df_PDR)
         st.success("File berhasil diproses!")
         st.dataframe(df_hasil)
 
-# Download hasil sebagai Excel
-        import io
+        # Download hasil sebagai Excel
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             df_hasil.to_excel(writer, index=False)
