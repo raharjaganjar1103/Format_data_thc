@@ -6,8 +6,6 @@ import io
 
 st.title('Anomali transaksi harian Format THC Gabungan')
 st.write("""1. File yang dibutuhkan THC Final.csv""")
-st.write("""2. Rapihkan data tersebut jadi seperti contoh ini: https://drive.google.com/file/d/14Ofz53dSVRFzlFrrc8snZmmkHq7CO-R2/view?usp=drive_link""")
-st.write("""3. Hapus karakter spesial terlebih dahulu pada file excel nya, lengkapnya ada disini tutorialnya : https://drive.google.com/file/d/1xABUwrMatieKFsNeUbOWl2KuDh6BVLwy/view?usp=drive_link """)
 
 ## SESI UPLOAD FILE   
 uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['csv'])
