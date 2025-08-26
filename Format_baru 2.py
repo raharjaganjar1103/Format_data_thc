@@ -51,6 +51,18 @@ if uploaded_files:
         st.success("File berhasil diproses!")
         st.dataframe(df_hasil)
 
+# Download hasil sebagai Excel
+        import io
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df_hasil.to_excel(writer, index=False)
+        st.download_button(
+            label="Download hasil sebagai Excel",
+            data=output.getvalue(),
+            file_name="THC Final Gabungan.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
 # --- FUNGSI PERHITUNGAN ---
 def ambil_3_digit_akhir(val):
     try:
@@ -110,17 +122,6 @@ def tf2(row):
 def final_filter(row):
     return bool(row["T/F 1"] or row["T/F2"])
 
-# Download hasil sebagai Excel
-        import io
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            df_hasil.to_excel(writer, index=False)
-        st.download_button(
-            label="Download hasil sebagai Excel",
-            data=output.getvalue(),
-            file_name="THC Final Gabungan.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
 
 
 ## Bagian main() dihapus karena tidak relevan untuk Streamlit
