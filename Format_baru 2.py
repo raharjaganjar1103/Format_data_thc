@@ -5,12 +5,12 @@ import pyarrow as pa
 import io
 
 st.title('Anomali transaksi harian Format THC Gabungan')
-st.write("""1. File yang dibutuhkan THC Final.xlsx""")
+st.write("""1. File yang dibutuhkan THC Final.csv""")
 st.write("""2. Rapihkan data tersebut jadi seperti contoh ini: https://drive.google.com/file/d/14Ofz53dSVRFzlFrrc8snZmmkHq7CO-R2/view?usp=drive_link""")
 st.write("""3. Hapus karakter spesial terlebih dahulu pada file excel nya, lengkapnya ada disini tutorialnya : https://drive.google.com/file/d/1xABUwrMatieKFsNeUbOWl2KuDh6BVLwy/view?usp=drive_link """)
 
 ## SESI UPLOAD FILE   
-uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['xlsx'])
+uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['csv'])
 
 df_PDR = None
 df_S = None
@@ -21,11 +21,32 @@ def load_excel(file):
 
 if uploaded_files:
     for file in uploaded_files:
-        if file.name == 'THC Final.xlsx':
-            df_PDR = pd.read_excel(file, engine='openpyxl')
+        if file.name.lower().endswith('.csv') and file.name == 'THC Final.csv':
+            # Asumsi delimiter ;, bisa diubah jika perlu
+            try:
+                df_PDR = pd.read_csv(file, delimiter=';')
+            except Exception:
+                df_PDR = pd.read_csv(file)  # fallback delimiter default koma
 
     if df_PDR is None:
-            st.error("File 'THC Final.xlsx' tidak ditemukan. Mohon upload file yang benar.")
+        st.error("File 'THC Final.csv' tidak ditemukan. Mohon upload file yang benar.")
+    else:
+        # Proses data dan tampilkan hasil
+        df_hasil = tambah_kolom_estimasi(df_PDR)
+        st.success("File berhasil diproses!")
+        st.dataframe(df_hasil)
+
+        # Download hasil sebagai Excel
+        import io
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df_hasil.to_excel(writer, index=False)
+        st.download_button(
+            label="Download hasil sebagai Excel",
+            data=output.getvalue(),
+            file_name="THC Final Gabungan.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
 # --- FUNGSI PERHITUNGAN ---
 def ambil_3_digit_akhir(val):
@@ -101,15 +122,4 @@ def tambah_kolom_estimasi(df):
     df["Final Filter"] = df.apply(final_filter, axis=1)
     return df
 
-def main():
-    input_file = "THC Final.csv"
-    output_file = "THC Final Gabungan.xlsx"
-    delimiter = ';'  # Ganti jika file Anda pakai koma
-
-    df = pd.read_csv(input_file, delimiter=delimiter)
-    df = tambah_kolom_estimasi(df)
-    df.to_excel(output_file, index=False)
-    print(f"File dengan kolom tambahan berhasil disimpan ke {output_file}")
-
-if __name__ == "__main__":
-    main()
+## Bagian main() dihapus karena tidak relevan untuk Streamlit
