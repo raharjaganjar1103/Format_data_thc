@@ -1,5 +1,31 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
+import pyarrow as pa
+import io
+
+st.title('Anomali transaksi harian Format THC Gabungan')
+st.write("""1. File yang dibutuhkan THC Final.xlsx""")
+st.write("""2. Rapihkan data tersebut jadi seperti contoh ini: https://drive.google.com/file/d/14Ofz53dSVRFzlFrrc8snZmmkHq7CO-R2/view?usp=drive_link""")
+st.write("""3. Hapus karakter spesial terlebih dahulu pada file excel nya, lengkapnya ada disini tutorialnya : https://drive.google.com/file/d/1xABUwrMatieKFsNeUbOWl2KuDh6BVLwy/view?usp=drive_link """)
+
+## SESI UPLOAD FILE   
+uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['xlsx'])
+
+df_PDR = None
+df_S = None
+
+@st.cache_data
+def load_excel(file):
+    return pd.read_excel(file, engine='openpyxl')
+
+if uploaded_files:
+    for file in uploaded_files:
+        if file.name == 'THC Final.xlsx':
+            df_PDR = pd.read_excel(file, engine='openpyxl')
+
+    if df_PDR is None:
+            st.error("File 'THC Final.xlsx' tidak ditemukan. Mohon upload file yang benar.")
 
 # --- FUNGSI PERHITUNGAN ---
 def ambil_3_digit_akhir(val):
