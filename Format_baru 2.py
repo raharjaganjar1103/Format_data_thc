@@ -5,7 +5,7 @@ import numpy as np
 import io
 
 st.title('Anomali transaksi harian Format THC Gabungan')
-st.write("""1. File yang dibutuhkan THC Final.csv""")
+st.write("""1. File yang dibutuhkan THC FINAL.csv""")
 
 ## SESI UPLOAD FILE   
 uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['csv'])
@@ -91,7 +91,7 @@ def tambah_kolom_estimasi(df):
 
 if uploaded_files:
     for file in uploaded_files:
-        if file.name.lower().endswith('.csv') and file.name == 'THC Final.csv':
+        if file.name.lower().endswith('.csv') and file.name == 'THC FINAL.csv':
             try:
                 df_PDR = pd.read_csv(file, delimiter=';')
             except Exception:
