@@ -5,7 +5,7 @@ import numpy as np
 import io
 
 st.title('Anomali transaksi harian Format THC Gabungan')
-st.write("""1. File yang dibutuhkan THC FINAL.csv""")
+st.write("""File yang dibutuhkan adalah hasil dari penggabungan seluruh THC yang bernama file THC FINAL.csv""")
 
 ## SESI UPLOAD FILE   
 uploaded_files = st.file_uploader("Upload files", accept_multiple_files=True, type=['csv'])
